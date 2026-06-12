@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Rajdhani:wght@300;400;500;600&family=Share+Tech+Mono&display=swap');
+
+:root {
+  --bg-deep:       #060810;
+  --bg-surface:    #0C0F1A;
+  --bg-card:       #101422;
+  --bg-hover:      #161B2E;
+  --gold:          #C9A84C;
+  --gold-dim:      #8A6E2E;
+  --gold-glow:     rgba(201,168,76,0.12);
+  --gold-border:   rgba(201,168,76,0.25);
+  --cyan:          #00FFC8;
+  --cyan-dim:      rgba(0,255,200,0.5);
+  --cyan-glow:     rgba(0,255,200,0.08);
+  --purple:        #8A2BE2;
+  --purple-dim:    rgba(138,43,226,0.2);
+  --cream:         #E8DFC8;
+  --cream-dim:     #A89880;
+  --text-primary:  #E8DFC8;
+  --text-secondary:#8A8FA8;
+  --text-muted:    #444860;
+  --border:        rgba(201,168,76,0.2);
+  --border-subtle: rgba(255,255,255,0.05);
+  --border-cyan:   rgba(0,255,200,0.2);
+  --success:       #00FFC8;
+  --danger:        #FF4C6A;
+  --info:          #5BA8FF;
+  --sidebar-width: 52px;
+  --font-hud:      'Share Tech Mono', monospace;
+  --font-title:    'Cinzel', serif;
+  --font-body:     'Rajdhani', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-deep); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 2px; }
+
+button { cursor: pointer; border: none; background: none; font-family: inherit; font-size: inherit; color: inherit; }
+input, textarea, select { font-family: var(--font-body); font-size: 14px; }
+a { color: var(--gold); text-decoration: none; }
