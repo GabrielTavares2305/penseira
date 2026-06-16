@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ExternalLink, Search, MapPin, Clock } from 'lucide-react'
+import { ExternalLink, Search, MapPin } from 'lucide-react'
 
 // Estados brasileiros
 const ESTADOS = [
@@ -20,68 +20,54 @@ const ESTADOS = [
   { uf:'REMOTO', nome:'Remoto / Home Office' },
 ]
 
+// Tecnologias populares para filtro rápido
 const TECHS = ['', 'React', 'Python', 'Java', 'Node.js', 'SQL', 'Linux', 'Docker', 'AWS', 'C#', 'PHP', 'Flutter']
 
-const PERIODOS = [
-  { label: 'ÚLTIMAS 24H',    linkedin: 'r86400',   indeed: '1',  catho: '1'  },
-  { label: 'ÚLTIMOS 7 DIAS', linkedin: 'r604800',  indeed: '7',  catho: '7'  },
-  { label: 'ÚLTIMOS 30 DIAS',linkedin: 'r2592000', indeed: '30', catho: '30' },
-  { label: 'QUALQUER DATA',  linkedin: '',          indeed: '',   catho: ''   },
-]
-
-function buildLinks(tipo, estado, tech, termo, periodo) {
+// Função que monta URLs reais dos portais com os filtros escolhidos
+function buildLinks(tipo, estado, tech, termo) {
   const q = [termo, tech].filter(Boolean).join(' ')
   const tipoLabel = tipo === 'estagio' ? 'estágio' : 'junior'
   const busca = [tipoLabel, 'tecnologia', q].filter(Boolean).join(' ')
-
-  const estadoNome  = ESTADOS.find(e => e.uf === estado)?.nome || ''
-  const locGupy     = estado === 'REMOTO' ? 'home-office' : estadoNome
-  const locLinkedin = estado === 'REMOTO' ? 'remote'      : estadoNome
-  const locIndeed   = estado === 'REMOTO' ? 'home+office' : estadoNome.replace(/ /g, '+')
-
-  const liPeriod  = periodo.linkedin ? `&f_TPR=${periodo.linkedin}` : ''
-  const liRemoto  = estado === 'REMOTO' ? '&f_WT=2' : ''
-  const indeedAge = periodo.indeed ? `&fromage=${periodo.indeed}` : ''
-  const cathoDate = periodo.catho ? `&ordenar=mais-recentes` : ''
+  const estadoNome = ESTADOS.find(e => e.uf === estado)?.nome || ''
+  const locGupy = estado === 'REMOTO' ? 'home-office' : estadoNome
+  const locLinkedin = estado === 'REMOTO' ? 'remote' : estadoNome
+  const locIndeed = estado === 'REMOTO' ? 'home+office' : estadoNome.replace(/ /g, '+')
 
   return [
     {
-      portal: 'LinkedIn Jobs',
-      desc: 'Rede profissional — vagas atualizadas em tempo real. Parâmetro de data aplicado automaticamente.',
-      cor: '#0A66C2',
-      destaque: true,
-      url: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(busca)}&location=${encodeURIComponent(locLinkedin || 'Brasil')}${liRemoto}${liPeriod}`,
-    },
-    {
-      portal: 'Indeed',
-      desc: 'Agregador com vagas de centenas de empresas. Filtro de data já aplicado no link.',
-      cor: '#2164F3',
-      destaque: true,
-      url: `https://br.indeed.com/jobs?q=${encodeURIComponent(busca)}&l=${locIndeed || 'Brasil'}${indeedAge}&sort=date`,
-    },
-    {
       portal: 'Gupy',
-      desc: 'Maior portal do Brasil — iFood, Nubank, Totvs. Use o filtro "Data" dentro do portal após abrir.',
+      desc: 'Maior portal de vagas do Brasil — empresas como iFood, Nubank, Totvs',
       cor: '#00D4AA',
-      dica: 'Após abrir, use o filtro "Publicado em" no painel lateral.',
       url: `https://portal.gupy.io/job-search/term=${encodeURIComponent(busca)}${locGupy ? `&jobTypes=${tipo === 'estagio' ? 'internship' : 'effective'}&state=${encodeURIComponent(locGupy)}` : ''}`,
     },
     {
+      portal: 'LinkedIn Jobs',
+      desc: 'Rede profissional com milhares de vagas atualizadas diariamente',
+      cor: '#0A66C2',
+      url: `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(busca)}&location=${encodeURIComponent(locLinkedin || 'Brasil')}&f_WT=${estado === 'REMOTO' ? '2' : ''}`,
+    },
+    {
+      portal: 'Indeed',
+      desc: 'Agregador com vagas de centenas de empresas e sites',
+      cor: '#2164F3',
+      url: `https://br.indeed.com/jobs?q=${encodeURIComponent(busca)}&l=${locIndeed || 'Brasil'}`,
+    },
+    {
       portal: 'CIEE',
-      desc: 'Especializado em estágio — muito usado por universidades brasileiras.',
+      desc: 'Especializado em estágio — muito usado por universidades',
       cor: '#E87722',
-      hidden: tipo !== 'estagio',
       url: `https://portal.ciee.org.br/estagio/?q=${encodeURIComponent(q || 'tecnologia')}${estadoNome ? `&estado=${encodeURIComponent(estadoNome)}` : ''}`,
+      hidden: tipo !== 'estagio',
     },
     {
       portal: 'Catho',
-      desc: 'Uma das maiores plataformas do Brasil. Resultados ordenados por mais recentes.',
+      desc: 'Uma das maiores plataformas de emprego do Brasil',
       cor: '#C9A84C',
-      url: `https://www.catho.com.br/vagas/${encodeURIComponent(busca.replace(/ /g,'-'))}/${estado && estado !== 'REMOTO' ? encodeURIComponent(estadoNome.toLowerCase().replace(/ /g,'-')) : ''}?${cathoDate}`,
+      url: `https://www.catho.com.br/vagas/${encodeURIComponent(busca.replace(/ /g,'-'))}/${estado && estado !== 'REMOTO' ? encodeURIComponent(estadoNome.toLowerCase().replace(/ /g,'-')) : ''}`,
     },
     {
       portal: 'Vagas.com.br',
-      desc: 'Portal focado no mercado brasileiro com bom filtro regional.',
+      desc: 'Portal focado no mercado brasileiro com bom filtro regional',
       cor: '#9B7FC0',
       url: `https://www.vagas.com.br/vagas-de-${encodeURIComponent(tipoLabel)}-em-${encodeURIComponent((q || 'ti').replace(/ /g,'-'))}${estadoNome ? `-em-${encodeURIComponent(estadoNome.toLowerCase().replace(/ /g,'-'))}` : ''}`,
     },
@@ -93,20 +79,21 @@ function CardCorners() {
 }
 
 export default function Jobs() {
-  const [tipo,    setTipo]    = useState('estagio')
-  const [estado,  setEstado]  = useState('')
-  const [tech,    setTech]    = useState('')
-  const [termo,   setTermo]   = useState('')
-  const [periodo, setPeriodo] = useState(PERIODOS[1])
+  const [tipo,   setTipo]   = useState('estagio')
+  const [estado, setEstado] = useState('')
+  const [tech,   setTech]   = useState('')
+  const [termo,  setTermo]  = useState('')
 
-  const links = buildLinks(tipo, estado, tech, termo, periodo)
+  const links = buildLinks(tipo, estado, tech, termo)
 
   return (
     <div>
+      {/* Filtros */}
       <div className="card" style={{ marginBottom: 20 }}>
         <CardCorners />
         <div className="card-label">// CONFIGURAR BUSCA <span className="card-label-right">OS LINKS JÁ ABREM FILTRADOS</span></div>
 
+        {/* Tipo */}
         <div className="form-group">
           <label className="form-label">TIPO DE VAGA</label>
           <div style={{ display: 'flex', gap: 8 }}>
@@ -116,35 +103,20 @@ export default function Jobs() {
           </div>
         </div>
 
-        <div className="form-group">
-          <label className="form-label"><Clock size={10} style={{ display:'inline', marginRight:4 }} />PERÍODO DE PUBLICAÇÃO</label>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            {PERIODOS.map(p => (
-              <button key={p.label} className={`btn ${periodo.label === p.label ? 'btn-gold' : 'btn-outline'}`}
-                style={{ fontSize: 10, padding: '5px 12px' }} onClick={() => setPeriodo(p)}>
-                {p.label}
-              </button>
-            ))}
-          </div>
-          {periodo.label !== 'QUALQUER DATA' && (
-            <div style={{ fontFamily: 'var(--font-hud)', fontSize: 10, color: 'var(--cyan-dim)', marginTop: 6, letterSpacing: 1 }}>
-              ✓ LinkedIn e Indeed já abrem filtrados por <span style={{ color: 'var(--gold)' }}>{periodo.label.toLowerCase()}</span>
-            </div>
-          )}
-        </div>
-
+        {/* Estado */}
         <div className="form-group">
           <label className="form-label"><MapPin size={10} style={{ display:'inline', marginRight:4 }} />ESTADO</label>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {ESTADOS.map(e => (
               <button key={e.uf} className={`btn ${estado === e.uf ? 'btn-gold' : 'btn-outline'}`}
                 style={{ fontSize: 10, padding: '5px 10px' }} onClick={() => setEstado(e.uf)}>
-                {e.uf ? e.uf : '🇧🇷'} {e.uf ? e.nome : 'TODOS'}
+                {e.uf || '🇧🇷'} {e.uf ? e.uf : 'TODOS'}
               </button>
             ))}
           </div>
         </div>
 
+        {/* Tecnologia */}
         <div className="form-group">
           <label className="form-label">TECNOLOGIA / ÁREA</label>
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -157,6 +129,7 @@ export default function Jobs() {
           </div>
         </div>
 
+        {/* Termo livre */}
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">TERMO ADICIONAL (OPCIONAL)</label>
           <div style={{ position: 'relative' }}>
@@ -168,31 +141,24 @@ export default function Jobs() {
         </div>
       </div>
 
+      {/* Resumo do filtro ativo */}
       <div style={{ fontFamily: 'var(--font-hud)', fontSize: 10, color: 'var(--cyan-dim)', letterSpacing: 2, marginBottom: 16 }}>
         // BUSCANDO: <span style={{ color: 'var(--gold)' }}>
           {tipo === 'estagio' ? 'ESTÁGIO' : 'JÚNIOR'} EM TI
-          {tech  ? ` · ${tech.toUpperCase()}`  : ''}
+          {tech ? ` · ${tech.toUpperCase()}` : ''}
           {termo ? ` · ${termo.toUpperCase()}` : ''}
           {estado ? ` · ${ESTADOS.find(e => e.uf === estado)?.nome.toUpperCase()}` : ' · TODO O BRASIL'}
-          {' · '}{periodo.label}
         </span>
       </div>
 
+      {/* Cards dos portais */}
       <div className="grid-2">
         {links.map(l => (
           <div key={l.portal} className="card" style={{ borderLeft: `2px solid ${l.cor}` }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                  <div style={{ fontFamily: 'var(--font-title)', fontSize: 16, color: 'var(--cream)' }}>{l.portal}</div>
-                  {l.destaque && periodo.label !== 'QUALQUER DATA' && (
-                    <span style={{ fontFamily: 'var(--font-hud)', fontSize: 9, color: 'var(--cyan)', border: '1px solid var(--cyan-dim)', borderRadius: 2, padding: '1px 5px', letterSpacing: 1 }}>FILTRO DE DATA ✓</span>
-                  )}
-                </div>
+                <div style={{ fontFamily: 'var(--font-title)', fontSize: 16, color: 'var(--cream)', marginBottom: 4 }}>{l.portal}</div>
                 <div style={{ fontFamily: 'var(--font-hud)', fontSize: 11, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{l.desc}</div>
-                {l.dica && (
-                  <div style={{ fontFamily: 'var(--font-hud)', fontSize: 10, color: 'var(--gold-dim)', marginTop: 4, letterSpacing: 0.5 }}>⚠ {l.dica}</div>
-                )}
               </div>
               <div style={{ width: 10, height: 10, borderRadius: '50%', background: l.cor, flexShrink: 0, marginTop: 4, boxShadow: `0 0 8px ${l.cor}` }} />
             </div>
@@ -203,15 +169,15 @@ export default function Jobs() {
         ))}
       </div>
 
+      {/* Dica */}
       <div className="card" style={{ marginTop: 20, borderColor: 'rgba(0,255,200,0.15)' }}>
         <div className="card-label">// DICA DE USO</div>
         <div style={{ fontFamily: 'var(--font-hud)', fontSize: 11, color: 'var(--text-secondary)', lineHeight: 2, letterSpacing: 0.5 }}>
-          <div>① Selecione o <span style={{ color: 'var(--gold)' }}>PERÍODO DE PUBLICAÇÃO</span> antes de abrir os portais</div>
-          <div>② Configure tipo, estado e tecnologia conforme sua busca</div>
-          <div>③ <span style={{ color: 'var(--gold)' }}>LinkedIn</span> e <span style={{ color: 'var(--gold)' }}>Indeed</span> já abrem com o filtro de data aplicado automaticamente</div>
-          <div>④ No <span style={{ color: 'var(--gold)' }}>Gupy</span>, use o filtro "Publicado em" no painel lateral após abrir</div>
+          <div>① Configure o tipo, estado e tecnologia acima</div>
+          <div>② Clique no portal de sua preferência — ele já abre com os filtros aplicados</div>
+          <div>③ No portal, você pode refinar ainda mais por data de publicação, salário e regime</div>
           <div style={{ marginTop: 8, color: 'var(--cyan-dim)' }}>
-            💡 Para resultados mais frescos, prefira <span style={{ color: 'var(--gold)' }}>LinkedIn</span> e <span style={{ color: 'var(--gold)' }}>Indeed</span> — atualizam em tempo real
+            💡 Para vagas mais recentes, no LinkedIn use o filtro <span style={{ color: 'var(--gold)' }}>"Últimas 24 horas"</span> após abrir
           </div>
         </div>
       </div>

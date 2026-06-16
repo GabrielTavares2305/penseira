@@ -317,7 +317,162 @@
 .note-area { background: var(--bg-deep); border: 1px solid var(--border-subtle); border-radius: 4px; padding: 14px; min-height: 200px; color: var(--text-primary); outline: none; font-size: 13px; line-height: 1.8; white-space: pre-wrap; font-family: var(--font-hud); }
 .note-area:empty::before { content: attr(data-placeholder); color: var(--text-muted); }
 
+/* ===== MOBILE ===== */
 @media (max-width: 768px) {
-  .grid-2, .grid-3 { grid-template-columns: 1fr; }
-  .main-content { padding: 14px; }
+
+  /* Layout vira coluna: main em cima, bottom nav embaixo */
+  .app { flex-direction: column; height: 100dvh; }
+
+  /* Sidebar lateral some */
+  .sidebar { display: none; }
+
+  /* Bottom navigation bar */
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 8px;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+  }
+
+  .bottom-nav-item.active {
+    color: var(--gold);
+    background: var(--gold-glow);
+  }
+
+  .bottom-nav-item svg { width: 20px; height: 20px; }
+
+  .bottom-nav-label {
+    font-family: var(--font-hud);
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* Main ocupa tudo menos a bottom nav */
+  .main {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 60px;
+  }
+
+  /* Topbar compacta */
+  .topbar { padding: 10px 16px; }
+  .topbar-right { display: none; }
+  .topbar-logo { font-size: 14px; letter-spacing: 3px; }
+  .page-title { font-size: 10px; }
+  .topbar-sep { display: none; }
+
+  /* Conteúdo */
+  .main-content { padding: 14px 14px 8px; }
+
+  /* Grids viram coluna */
+  .grid-2, .grid-3, .grid-auto { grid-template-columns: 1fr; }
+
+  /* Cards menores */
+  .card { padding: 14px; }
+
+  /* Stat cards em linha de 3 */
+  .stats-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .stat-card { padding: 10px 6px; }
+  .stat-value { font-size: 22px; }
+  .stat-label { font-size: 8px; }
+
+  /* Botões menores */
+  .btn { padding: 6px 12px; font-size: 10px; }
+
+  /* Tags em linha */
+  .tags { gap: 4px; }
+  .tag { font-size: 9px; padding: 2px 6px; }
+
+  /* Projetos: lista vira tela cheia, detalhe vira tela cheia */
+  .projects-layout { flex-direction: column !important; height: auto !important; }
+  .projects-list { width: 100% !important; }
+  .projects-detail { display: none; }
+  .projects-detail.visible { display: block !important; }
+
+  /* Estudos: colunas viram abas */
+  .study-grid { display: flex !important; flex-direction: column !important; }
+
+  /* Pomodoro centralizado */
+  .pomodoro-ring { width: 140px; height: 140px; }
+  .pomodoro-digits { font-size: 28px; }
+
+  /* Abas de matérias */
+  .subject-tabs { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+  .subject-tabs::-webkit-scrollbar { display: none; }
+
+  /* Filtros de vagas em scroll horizontal */
+  .filter-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+  .filter-scroll::-webkit-scrollbar { display: none; }
+  .filter-scroll > div { flex-wrap: nowrap !important; }
+
+  /* Notas em tela cheia */
+  .note-area { min-height: 250px; }
+
+  /* Jobs portal cards */
+  .portal-card-btn { font-size: 10px !important; }
+
+  /* Esconder cantos decorativos no mobile (economiza espaço visual) */
+  .card-corner { display: none; }
+
+  /* Topbar::after linha cyan menor */
+  .topbar::after { width: 60px; }
+}
+
+/* Garantir que bottom-nav só aparece no mobile */
+.bottom-nav { display: none; }
+
+/* ===== MOBILE ESPECÍFICO ===== */
+.mobile-back   { display: none; }
+.mobile-hidden { display: block; }
+.desktop-only  { display: block; }
+
+@media (max-width: 768px) {
+  /* Projects: navegação em tela cheia */
+  .projects-layout  { flex-direction: column !important; }
+  .projects-list    { width: 100% !important; }
+  .projects-detail  { display: none; }
+  .projects-detail.visible { display: block; }
+  .mobile-hidden.mobile-hidden { display: none; }
+  .mobile-back   { display: inline-flex; }
+  .desktop-only  { display: none; }
+
+  /* Jobs: filtros em scroll horizontal */
+  .filter-row { overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6px; white-space: nowrap; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-row > button { display: inline-flex; }
+
+  /* Topbar: só logo + página */
+  .topbar-sep   { display: none !important; }
+  .topbar-right { display: none !important; }
+
+  /* Study: pomodoro + matérias em coluna */
+  .study-cols { flex-direction: column !important; }
+
+  /* Modal bottom sheet */
+  .modal-sheet { border-radius: 12px 12px 0 0 !important; }
 }
