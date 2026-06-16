@@ -1,20 +1,23 @@
 import { useState, useEffect } from 'react'
 import './App.css'
-import SplashLogin from './components/SplashLogin'
-import Sidebar from './components/Sidebar'
-import Home from './components/Home'
-import Jobs from './components/Jobs'
-import Projects from './components/Projects'
-import Study from './components/Study'
-import News from './components/News'
-import { useAuth } from './hooks/useAuth'
+import SplashLogin   from './components/SplashLogin'
+import Onboarding    from './components/Onboarding'
+import Welcome       from './components/Welcome'
+import Sidebar       from './components/Sidebar'
+import Home          from './components/Home'
+import Jobs          from './components/Jobs'
+import Projects      from './components/Projects'
+import Study         from './components/Study'
+import News          from './components/News'
+import { useAuth }         from './hooks/useAuth'
+import { useTheme }        from './hooks/useTheme'
 import { useLocalStorage } from './hooks/useLocalStorage'
-import { useNotifications } from './hooks/useNotifications'
+import { useNotifications} from './hooks/useNotifications'
 import { Home as HomeIcon, Briefcase, Server, BookOpen, Newspaper, LogOut } from 'lucide-react'
 
 const PAGES = {
   home:     '// VISÃO GERAL',
-  jobs:     '// VAGAS · TI',
+  jobs:     '// VAGAS',
   projects: '// PROJETOS',
   study:    '// ESTUDOS',
   news:     '// NOTÍCIAS',
@@ -30,13 +33,17 @@ const NAV = [
 
 const todayKey = () => new Date().toISOString().slice(0, 10)
 
-// ── App autenticado ────────────────────────────────────────────────────────
-function AuthenticatedApp({ user, logout }) {
+// ── App autenticado ─────────────────────────────────────────────────────────
+function AuthenticatedApp({ user, profile, logout }) {
+  const uid   = user.uid
+  const theme = profile?.theme || 'stark-gold'
+
+  // Aplica o tema via CSS variables
+  useTheme(theme)
+
   const [page, setPage] = useState('home')
   const [time, setTime] = useState(new Date())
 
-  // Dados persistidos — prefixados com uid para isolar por usuário
-  const uid = user.uid
   const [pomodoroLog, setPomodoroLog] = useLocalStorage(`${uid}_pomodoro_log`, [])
   const [reminders,   setReminders]   = useLocalStorage(`${uid}_reminders`,    [])
   const [dailyCheck,  setDailyCheck]  = useLocalStorage(`${uid}_daily_check`,  { date:'', items:[] })
@@ -45,7 +52,6 @@ function AuthenticatedApp({ user, logout }) {
 
   const { scheduleReminder } = useNotifications()
 
-  // Relógio + verificação de lembretes
   useEffect(() => {
     const t = setInterval(() => {
       setTime(new Date())
@@ -55,7 +61,6 @@ function AuthenticatedApp({ user, logout }) {
     return () => clearInterval(t)
   }, [reminders])
 
-  // Reseta checklist diário
   useEffect(() => {
     if (dailyCheck.date !== todayKey()) {
       setDailyCheck({
@@ -65,7 +70,7 @@ function AuthenticatedApp({ user, logout }) {
           { id:2, text:'Fazer uma revisão pendente',    done:false },
           { id:3, text:'Candidatar para uma vaga',      done:false },
           { id:4, text:'Atualizar um projeto',          done:false },
-          { id:5, text:'Ler notícias de TI',            done:false },
+          { id:5, text:'Ler notícias',                  done:false },
         ]
       })
     }
@@ -74,31 +79,25 @@ function AuthenticatedApp({ user, logout }) {
   const onPomodoroComplete = () => {
     const today = todayKey()
     setPomodoroLog(log => {
-      const existing = log.find(l => l.date === today)
-      if (existing) return log.map(l => l.date === today ? { ...l, count: l.count+1 } : l)
+      const ex = log.find(l => l.date === today)
+      if (ex) return log.map(l => l.date===today ? {...l,count:l.count+1} : l)
       return [...log, { date:today, count:1 }]
     })
   }
 
   const toggleDailyItem = (id) => {
-    setDailyCheck(d => ({
-      ...d,
-      items: d.items.map(i => i.id===id ? { ...i, done:!i.done } : i)
-    }))
+    setDailyCheck(d => ({...d, items:d.items.map(i => i.id===id ? {...i,done:!i.done} : i)}))
   }
 
-  const pad      = n => String(n).padStart(2,'0')
-  const timeStr  = `${pad(time.getHours())}:${pad(time.getMinutes())}:${pad(time.getSeconds())}`
-  const dateStr  = `${pad(time.getDate())}.${pad(time.getMonth()+1)}.${time.getFullYear()}`
+  const pad     = n => String(n).padStart(2,'0')
+  const timeStr = `${pad(time.getHours())}:${pad(time.getMinutes())}:${pad(time.getSeconds())}`
+  const dateStr = `${pad(time.getDate())}.${pad(time.getMonth()+1)}.${time.getFullYear()}`
   const totalSessions = pomodoroLog.reduce((a,l) => a+l.count, 0)
-
-  // Nome curto do usuário para o topbar
-  const displayName = user.displayName?.split(' ')[0] || user.email?.split('@')[0] || 'Usuário'
+  const displayName   = (profile?.name || user.displayName || user.email)?.split(' ')[0] || 'Usuário'
 
   return (
     <div className="app">
       <Sidebar active={page} onNavigate={setPage} />
-
       <div className="main">
         <header className="topbar">
           <div className="topbar-left">
@@ -111,51 +110,23 @@ function AuthenticatedApp({ user, logout }) {
               OLÁ, <span>{displayName.toUpperCase()}</span>
             </span>
             <span style={{color:'var(--text-muted)'}}>{dateStr} <span>{timeStr}</span></span>
-            <button
-              onClick={logout}
-              style={{background:'none',border:'none',cursor:'pointer',color:'var(--text-muted)',display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-hud)',fontSize:10,letterSpacing:1}}
-              title="Sair"
-            >
+            <button onClick={logout} title="Sair"
+              style={{background:'none',border:'none',cursor:'pointer',color:'var(--text-muted)',display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-hud)',fontSize:10,letterSpacing:1}}>
               <LogOut size={13}/> SAIR
             </button>
           </div>
         </header>
-
         <div className="main-content">
-          {page==='home'     && (
-            <Home
-              onNavigate={setPage}
-              savedJobs={savedJobs}
-              projects={projects}
-              totalSessions={totalSessions}
-              pomodoroLog={pomodoroLog}
-              dailyCheck={dailyCheck}
-              onToggleDaily={toggleDailyItem}
-              reminders={reminders}
-              onSetReminders={setReminders}
-            />
-          )}
-          {page==='jobs'     && <Jobs uid={uid} />}
+          {page==='home'     && <Home onNavigate={setPage} savedJobs={savedJobs} projects={projects} totalSessions={totalSessions} pomodoroLog={pomodoroLog} dailyCheck={dailyCheck} onToggleDaily={toggleDailyItem} reminders={reminders} onSetReminders={setReminders} />}
+          {page==='jobs'     && <Jobs uid={uid} area={profile?.area} />}
           {page==='projects' && <Projects uid={uid} />}
-          {page==='study'    && (
-            <Study
-              uid={uid}
-              onPomodoroComplete={onPomodoroComplete}
-              totalSessions={totalSessions}
-              pomodoroLog={pomodoroLog}
-            />
-          )}
+          {page==='study'    && <Study uid={uid} userSubjects={profile?.subjects} onPomodoroComplete={onPomodoroComplete} totalSessions={totalSessions} pomodoroLog={pomodoroLog} />}
           {page==='news'     && <News />}
         </div>
       </div>
-
       <nav className="bottom-nav">
         {NAV.map(item => (
-          <button
-            key={item.id}
-            className={`bottom-nav-item ${page===item.id?'active':''}`}
-            onClick={() => setPage(item.id)}
-          >
+          <button key={item.id} className={`bottom-nav-item ${page===item.id?'active':''}`} onClick={()=>setPage(item.id)}>
             <item.icon size={20}/>
             <span className="bottom-nav-label">{item.label}</span>
           </button>
@@ -165,25 +136,50 @@ function AuthenticatedApp({ user, logout }) {
   )
 }
 
-// ── Tela de carregamento ───────────────────────────────────────────────────
+// ── Loading ─────────────────────────────────────────────────────────────────
 function LoadingScreen() {
   return (
-    <div style={{
-      position:'fixed',inset:0,background:'#060810',
-      display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16
-    }}>
-      <div style={{fontFamily:'Cinzel,serif',fontSize:24,color:'#C9A84C',letterSpacing:6}}>PENSEIRA</div>
+    <div style={{position:'fixed',inset:0,background:'#060810',display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:16}}>
+      <div style={{fontFamily:"'Cinzel',serif",fontSize:24,color:'#C9A84C',letterSpacing:6}}>PENSEIRA</div>
       <div style={{width:32,height:32,border:'2px solid rgba(201,168,76,0.2)',borderTopColor:'#C9A84C',borderRadius:'50%',animation:'spin 0.8s linear infinite'}}/>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 }
 
-// ── Componente raiz ────────────────────────────────────────────────────────
+// ── Componente raiz ──────────────────────────────────────────────────────────
 export default function App() {
   const { user, loading, logout } = useAuth()
+  const [showWelcome, setShowWelcome] = useState(false)
+  const [welcomeProfile, setWelcomeProfile] = useState(null)
 
-  if (loading)      return <LoadingScreen />
-  if (!user)        return <SplashLogin />
-  return <AuthenticatedApp user={user} logout={logout} />
+  if (loading) return <LoadingScreen />
+  if (!user)   return <SplashLogin />
+
+  const profile = user.profile
+
+  // Precisa fazer onboarding?
+  if (!profile?.onboardingDone) {
+    return (
+      <Onboarding
+        user={user}
+        onComplete={(p) => {
+          setWelcomeProfile(p)
+          setShowWelcome(true)
+        }}
+      />
+    )
+  }
+
+  // Tela de boas-vindas pós-onboarding
+  if (showWelcome && welcomeProfile) {
+    return (
+      <>
+        <Welcome profile={welcomeProfile} onDone={() => setShowWelcome(false)} />
+        <AuthenticatedApp user={user} profile={{...profile,...welcomeProfile}} logout={logout} />
+      </>
+    )
+  }
+
+  return <AuthenticatedApp user={user} profile={profile} logout={logout} />
 }

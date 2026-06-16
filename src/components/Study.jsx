@@ -54,7 +54,7 @@ function SubjectCard({ subject, data, onToggleTask, onAddTask }) {
   )
 }
 
-const DEFAULT_SUBJECTS = [
+const BUILTIN_SUBJECTS = [
   {id:'calculo',     name:'Cálculo I',                  emoji:'📐', color:'#5BA8FF'},
   {id:'estruturas',  name:'Estrutura de Dados',         emoji:'🌲', color:'#00FFC8'},
   {id:'arquitetura', name:'Arquitetura de Computadores',emoji:'⚙️', color:'#C9A84C'},
@@ -63,7 +63,7 @@ const DEFAULT_SUBJECTS = [
   {id:'concurso',    name:'Concurso Público',           emoji:'📋', color:'#E3B341'},
 ]
 
-const DEFAULT_DATA = Object.fromEntries(DEFAULT_SUBJECTS.map(s => [s.id, {
+const DEFAULT_DATA = Object.fromEntries(BUILTIN_SUBJECTS.map(s => [s.id, {
   tasks: s.id==='concurso'
     ? [{id:1,text:'Direito Administrativo — módulo 3',done:false},{id:2,text:'Simulado Conhecimentos Gerais',done:false},{id:3,text:'Português — Concordância verbal',done:true}]
     : s.id==='estruturas'
@@ -71,7 +71,10 @@ const DEFAULT_DATA = Object.fromEntries(DEFAULT_SUBJECTS.map(s => [s.id, {
     : []
 }]))
 
-export default function Study({ uid = 'local', onPomodoroComplete, totalSessions, pomodoroLog }) {
+export default function Study({ uid = 'local', userSubjects = null, onPomodoroComplete, totalSessions, pomodoroLog }) {
+  // Usa matérias do perfil se disponível, senão usa as padrão
+  const ACTIVE_SUBJECTS = userSubjects && userSubjects.length > 0 ? userSubjects : BUILTIN_SUBJECTS
+
   // Modo foco total
   const [focusMode, setFocusMode] = useState(false)
   const [focusSubject, setFocusSubject] = useState('calculo')
@@ -129,7 +132,7 @@ export default function Study({ uid = 'local', onPomodoroComplete, totalSessions
   const totalTasks = Object.values(data).reduce((a,d)=>a+d.tasks.length,0)
 
   const activeSubjectData = data[focusSubject] || {tasks:[]}
-  const activeSubjectObj  = DEFAULT_SUBJECTS.find(s=>s.id===focusSubject)
+  const activeSubjectObj  = ACTIVE_SUBJECTS.find(s=>s.id===focusSubject)
 
   // ── MODO FOCO TOTAL ──────────────────────────────────────────────────
   if (focusMode) {
@@ -225,7 +228,7 @@ export default function Study({ uid = 'local', onPomodoroComplete, totalSessions
             <div style={{marginBottom:12}}>
               <div style={{fontFamily:'var(--font-hud)',fontSize:9,letterSpacing:2,color:'var(--cyan-dim)',marginBottom:6}}>MATÉRIA ATIVA</div>
               <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
-                {DEFAULT_SUBJECTS.map(s=>(
+                {ACTIVE_SUBJECTS.map(s=>(
                   <button key={s.id} onClick={()=>setFocusSubject(s.id)}
                     style={{fontSize:10,padding:'3px 8px',borderRadius:4,border:`1px solid ${focusSubject===s.id?s.color:'var(--border-subtle)'}`,background:focusSubject===s.id?`${s.color}22`:'transparent',color:focusSubject===s.id?s.color:'var(--text-muted)',cursor:'pointer'}}>
                     {s.emoji} {s.name.split(' ')[0]}
@@ -266,7 +269,7 @@ export default function Study({ uid = 'local', onPomodoroComplete, totalSessions
 
           {/* Matérias */}
           <div style={{display:'flex',flexDirection:'column',gap:10}}>
-            {DEFAULT_SUBJECTS.map(s=>(
+            {ACTIVE_SUBJECTS.map(s=>(
               <SubjectCard key={s.id} subject={s} data={data[s.id]||{tasks:[]}} onToggleTask={toggleTask} onAddTask={addTask}/>
             ))}
           </div>
@@ -277,7 +280,7 @@ export default function Study({ uid = 'local', onPomodoroComplete, totalSessions
           <div className="card-corner tl"/><div className="card-corner br"/>
           <div className="card-label">// ANOTAÇÕES POR MATÉRIA</div>
           <div style={{display:'flex',gap:4,flexWrap:'wrap',marginBottom:14}}>
-            {DEFAULT_SUBJECTS.map(s=>(
+            {ACTIVE_SUBJECTS.map(s=>(
               <button key={s.id} className={`btn ${activeNote===s.id?'btn-gold':'btn-outline'}`}
                 style={{fontSize:10,padding:'4px 8px'}} onClick={()=>setNote(s.id)}>
                 {s.emoji} {s.name.split(' ')[0].toUpperCase()}
@@ -287,7 +290,7 @@ export default function Study({ uid = 'local', onPomodoroComplete, totalSessions
           <textarea
             className="textarea"
             style={{flex:1,minHeight:400,background:'var(--bg-deep)',fontFamily:'var(--font-hud)',fontSize:12,lineHeight:1.8,letterSpacing:0.5}}
-            placeholder={`// ANOTAÇÕES · ${DEFAULT_SUBJECTS.find(s=>s.id===activeNote)?.name.toUpperCase()}\n\n> tópico\n- ponto importante\n- outro ponto`}
+            placeholder={`// ANOTAÇÕES · ${ACTIVE_SUBJECTS.find(s=>s.id===activeNote)?.name.toUpperCase()}\n\n> tópico\n- ponto importante\n- outro ponto`}
             value={notes[activeNote]||''}
             onChange={e=>setNotes(n=>({...n,[activeNote]:e.target.value}))}
           />
