@@ -41,7 +41,10 @@ function Tutorial({ onClose, themeClass, accentColor }) {
         </div>
 
         <div style={{background:`${accentColor}12`,border:`1px solid ${accentColor}30`,borderRadius:8,padding:12,marginBottom:20,fontSize:12,color:'var(--text-secondary)',lineHeight:1.6}}>
-          💡 <strong style={{color:accentColor}}>Dica:</strong> Para pegar o link de uma imagem no Pinterest, toque e segure a imagem → "Copiar link da imagem". No Behance, clique com o botão direito → "Copiar endereço da imagem".
+          💡 <strong style={{color:accentColor}}>Como pegar o link correto da imagem:</strong><br/>
+          <strong>Pinterest:</strong> Abra a imagem em tela cheia → clique com botão direito <strong>na imagem</strong> → "Copiar endereço da imagem". O link correto termina em <code style={{color:accentColor}}>.jpg</code> ou <code style={{color:accentColor}}>.png</code>.<br/>
+          <strong>Behance:</strong> Clique com botão direito na imagem → "Copiar endereço da imagem".<br/>
+          <strong>⚠️ Não copie o link da página</strong> — copie o link da imagem em si!
         </div>
 
         <button onClick={onClose} style={{

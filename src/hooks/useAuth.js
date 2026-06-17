@@ -1,5 +1,5 @@
 // Hook central de autenticação Firebase
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
@@ -9,28 +9,48 @@ import {
   updateProfile,
   sendPasswordResetEmail,
 } from 'firebase/auth'
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { doc, setDoc, getDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { auth, db, provider } from '../firebase'
 
 export function useAuth() {
   const [user,    setUser]    = useState(undefined) // undefined = carregando
   const [loading, setLoading] = useState(true)
   const [error,   setError]   = useState('')
+  const profileUnsubRef = useRef(null)
 
-  // Observa mudanças de autenticação em tempo real
+  // Observa mudanças de autenticação + perfil em TEMPO REAL
+  // Isso garante que mudanças feitas em um dispositivo (ex: ativar Moodboard
+  // no desktop) aparecem automaticamente em todos os outros (ex: celular),
+  // sem precisar fazer logout/login de novo.
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+    const unsubAuth = onAuthStateChanged(auth, (firebaseUser) => {
+      // Cancela qualquer listener de perfil anterior
+      if (profileUnsubRef.current) {
+        profileUnsubRef.current()
+        profileUnsubRef.current = null
+      }
+
       if (firebaseUser) {
-        // Busca perfil extra do Firestore
-        const ref  = doc(db, 'users', firebaseUser.uid)
-        const snap = await getDoc(ref)
-        setUser({ ...firebaseUser, profile: snap.exists() ? snap.data() : null })
+        const ref = doc(db, 'users', firebaseUser.uid)
+        // onSnapshot escuta mudanças no documento em tempo real
+        const unsubProfile = onSnapshot(ref, (snap) => {
+          setUser(prev => ({
+            ...firebaseUser,
+            profile: snap.exists() ? snap.data() : null,
+          }))
+          setLoading(false)
+        }, () => setLoading(false))
+        profileUnsubRef.current = unsubProfile
       } else {
         setUser(null)
+        setLoading(false)
       }
-      setLoading(false)
     })
-    return unsub
+
+    return () => {
+      unsubAuth()
+      if (profileUnsubRef.current) profileUnsubRef.current()
+    }
   }, [])
 
   // Cria perfil do usuário no Firestore na primeira vez
