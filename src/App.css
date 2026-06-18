@@ -352,14 +352,15 @@
   }
 
   .bottom-nav-item {
-    display:flex;flex-direction:column;align-items:center;gap:3px;
-    padding:6px 10px;border-radius:8px;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+    padding:6px 4px;border-radius:8px;
     color:var(--text-muted);cursor:pointer;flex:1;
     transition:all 0.15s;border:none;background:none;
+    min-width:0;
   }
   .bottom-nav-item.active { color:var(--accent);background:var(--accent-glow); }
-  .bottom-nav-item svg { width:20px;height:20px; }
-  .bottom-nav-label { font-family:var(--font-hud);font-size:8px;letter-spacing:1px;text-transform:uppercase; }
+  .bottom-nav-item svg { width:19px;height:19px; }
+  .bottom-nav-label { font-family:var(--font-hud);font-size:7.5px;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap; }
 
   .main { flex:1;overflow:hidden;display:flex;flex-direction:column;padding-bottom:60px; }
   .theme-glass .main { margin:0;border-radius:0;border:none; }
@@ -380,3 +381,17 @@
 
 .mobile-back { display:none; }
 .desktop-only { display:block; }
+
+/* ===== HERO GREETING CARD ===== */
+.hero-greeting {
+  background: var(--card-bg);
+}
+.theme-stark-gold .hero-greeting,
+.theme-nebula .hero-greeting {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-surface) 100%);
+}
+.theme-studio .hero-greeting,
+.theme-arctic .hero-greeting,
+.theme-glass .hero-greeting {
+  background: var(--card-bg);
+}

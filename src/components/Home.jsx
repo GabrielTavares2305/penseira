@@ -54,7 +54,7 @@ export default function Home({ onNavigate, savedJobs, projects, totalSessions, p
   return (
     <div>
       {/* Greeting */}
-      <div className="card" style={{marginBottom:16,background:'linear-gradient(135deg,#101422 0%,#0C0F1A 100%)'}}>
+      <div className="card hero-greeting" style={{marginBottom:16}}>
         <CardCorners/>
         <div className="card-label">// CENTRAL DE COMANDO</div>
         <div style={{display:'flex',alignItems:'center',gap:14}}>

@@ -12,6 +12,7 @@ import News        from './components/News'
 import Moodboard   from './components/Moodboard'
 import Financas    from './components/Financas'
 import Settings    from './components/Settings'
+import MoreMenu    from './components/MoreMenu'
 import { useAuth }         from './hooks/useAuth'
 import { useTheme }        from './hooks/useTheme'
 import { useLocalStorage } from './hooks/useLocalStorage'
@@ -40,6 +41,7 @@ function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
 
   const [page, setPage] = useState('home')
   const [time, setTime] = useState(new Date())
+  const [showMore, setShowMore] = useState(false)
 
   const [pomodoroLog, setPomodoroLog] = useLocalStorage(`${uid}_pomodoro_log`, [])
   const [reminders,   setReminders]   = useLocalStorage(`${uid}_reminders`,    [])
@@ -150,7 +152,22 @@ function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
             <span className="bottom-nav-label">{item.label}</span>
           </button>
         ))}
+        <button
+          className={`bottom-nav-item ${['settings','moodboard','financas'].includes(page)?'active':''}`}
+          onClick={() => setShowMore(true)}
+        >
+          <MoreHorizontal size={20} />
+          <span className="bottom-nav-label">Mais</span>
+        </button>
       </nav>
+
+      {showMore && (
+        <MoreMenu
+          onNavigate={setPage}
+          onClose={() => setShowMore(false)}
+          features={features}
+        />
+      )}
     </div>
   )
 }

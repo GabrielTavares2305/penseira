@@ -133,13 +133,24 @@ const THEME_STYLES = {
     font:    'Inter',
     mono:    'Inter',
   },
+  'glass': {
+    bg:      'linear-gradient(135deg,#C8CDD6 0%,#D4DCE8 100%)',
+    accent:  '#1A1A2E',
+    text:    '#1A1A2E',
+    sub:     '#5A5A7A',
+    tag:     { bg:'rgba(26,26,46,0.08)', border:'rgba(26,26,46,0.2)', color:'#1A1A2E' },
+    bar:     '#1A1A2E',
+    hint:    '#9999AA',
+    font:    'Syne',
+    mono:    'Inter',
+  },
 }
 
 export default function Welcome({ profile, onDone }) {
   const [fadeOut, setFadeOut] = useState(false)
   const theme = THEME_STYLES[profile.theme] || THEME_STYLES['stark-gold']
   const name  = profile.name?.split(' ')[0] || 'bem-vindo'
-  const isLight = profile.theme==='studio'||profile.theme==='arctic'
+  const isLight = profile.theme==='studio'||profile.theme==='arctic'||profile.theme==='glass'
 
   useEffect(() => {
     const t1 = setTimeout(() => setFadeOut(true), 3800)
