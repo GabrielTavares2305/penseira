@@ -16,20 +16,20 @@ import { useAuth }         from './hooks/useAuth'
 import { useTheme }        from './hooks/useTheme'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useNotifications} from './hooks/useNotifications'
-import { Home as HomeIcon, Briefcase, Server, BookOpen, Newspaper, LogOut } from 'lucide-react'
+import { Home as HomeIcon, Briefcase, Server, BookOpen, Newspaper, MoreHorizontal } from 'lucide-react'
 
 const PAGE_TITLES = {
-  home:      '// VISÃO GERAL',
-  jobs:      '// VAGAS',
-  projects:  '// PROJETOS',
-  study:     '// ESTUDOS',
-  news:      '// NOTÍCIAS',
-  moodboard: '// MOODBOARD',
-  financas:  '// CONTROLE DE GASTOS',
-  settings:  '// CONFIGURAÇÕES',
+  home:      'Visão Geral',
+  jobs:      'Vagas',
+  projects:  'Projetos',
+  study:     'Estudos',
+  news:      'Notícias',
+  moodboard: 'Moodboard',
+  financas:  'Gastos',
+  settings:  'Configurações',
 }
 
-const todayKey = () => new Date().toISOString().slice(0,10)
+const todayKey = () => new Date().toISOString().slice(0, 10)
 
 function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
   const uid      = user.uid
@@ -76,62 +76,77 @@ function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
   const onPomodoroComplete = () => {
     const today = todayKey()
     setPomodoroLog(log => {
-      const ex = log.find(l=>l.date===today)
-      if (ex) return log.map(l=>l.date===today?{...l,count:l.count+1}:l)
-      return [...log,{date:today,count:1}]
+      const ex = log.find(l => l.date === today)
+      if (ex) return log.map(l => l.date === today ? {...l, count:l.count+1} : l)
+      return [...log, { date:today, count:1 }]
     })
   }
 
   const toggleDailyItem = (id) => {
-    setDailyCheck(d=>({...d,items:d.items.map(i=>i.id===id?{...i,done:!i.done}:i)}))
+    setDailyCheck(d => ({...d, items:d.items.map(i => i.id===id ? {...i,done:!i.done} : i)}))
   }
 
   const pad     = n => String(n).padStart(2,'0')
   const timeStr = `${pad(time.getHours())}:${pad(time.getMinutes())}:${pad(time.getSeconds())}`
   const dateStr = `${pad(time.getDate())}.${pad(time.getMonth()+1)}.${time.getFullYear()}`
-  const totalSessions = pomodoroLog.reduce((a,l)=>a+l.count,0)
-  const displayName   = (profile?.name||user.displayName||user.email)?.split(' ')[0]||'Usuário'
+  const totalSessions = pomodoroLog.reduce((a,l) => a+l.count, 0)
+  const displayName   = (profile?.name || user.displayName || user.email)?.split(' ')[0] || 'Usuário'
 
   return (
-    <div className="app">
-      <Sidebar active={page} onNavigate={setPage} features={features}/>
+    <div className={`app theme-${theme}`}>
+      <Sidebar
+        active={page}
+        onNavigate={setPage}
+        features={features}
+        profile={profile}
+      />
+
       <div className="main">
         <header className="topbar">
-          <div className="topbar-left">
+          <div className="topbar-left" style={{display:'flex',alignItems:'center'}}>
             <div className="topbar-logo">PENSEIRA</div>
-            <div className="topbar-sep"/>
-            <div className="page-title">{PAGE_TITLES[page]||''}</div>
+            <div className="topbar-sep" />
+            <div className="page-title">{PAGE_TITLES[page] || ''}</div>
           </div>
           <div className="topbar-right">
-            <span style={{color:'var(--text-muted)'}}>OLÁ, <span>{displayName.toUpperCase()}</span></span>
+            <span style={{color:'var(--text-muted)'}}>
+              {displayName.toUpperCase()}
+            </span>
             <span style={{color:'var(--text-muted)'}}>{dateStr} <span>{timeStr}</span></span>
-            <button onClick={logout} title="Sair"
-              style={{background:'none',border:'none',cursor:'pointer',color:'var(--text-muted)',display:'flex',alignItems:'center',gap:4,fontFamily:'var(--font-hud)',fontSize:10,letterSpacing:1}}>
-              <LogOut size={13}/> SAIR
-            </button>
+            <div className="topbar-online">
+              <div className="topbar-online-dot" />
+              <div className="topbar-online-txt">Online</div>
+            </div>
           </div>
         </header>
+
         <div className="main-content">
-          {page==='home'      && <Home onNavigate={setPage} savedJobs={savedJobs} projects={projects} totalSessions={totalSessions} pomodoroLog={pomodoroLog} dailyCheck={dailyCheck} onToggleDaily={toggleDailyItem} reminders={reminders} onSetReminders={setReminders}/>}
-          {page==='jobs'      && <Jobs uid={uid} area={profile?.area}/>}
-          {page==='projects'  && <Projects uid={uid}/>}
-          {page==='study'     && <Study uid={uid} userSubjects={profile?.subjects} onPomodoroComplete={onPomodoroComplete} totalSessions={totalSessions} pomodoroLog={pomodoroLog}/>}
-          {page==='news'      && <News/>}
-          {page==='moodboard' && features.includes('moodboard') && <Moodboard uid={uid} theme={theme}/>}
-          {page==='financas'  && features.includes('financas')  && <Financas  uid={uid} theme={theme}/>}
-          {page==='settings'  && <Settings user={user} profile={profile} onProfileUpdate={onProfileUpdate} logout={logout}/>}
+          {page==='home'      && <Home onNavigate={setPage} savedJobs={savedJobs} projects={projects} totalSessions={totalSessions} pomodoroLog={pomodoroLog} dailyCheck={dailyCheck} onToggleDaily={toggleDailyItem} reminders={reminders} onSetReminders={setReminders} />}
+          {page==='jobs'      && <Jobs uid={uid} area={profile?.area} />}
+          {page==='projects'  && <Projects uid={uid} />}
+          {page==='study'     && <Study uid={uid} userSubjects={profile?.subjects} onPomodoroComplete={onPomodoroComplete} totalSessions={totalSessions} pomodoroLog={pomodoroLog} />}
+          {page==='news'      && <News />}
+          {page==='moodboard' && features.includes('moodboard') && <Moodboard uid={uid} theme={theme} />}
+          {page==='financas'  && features.includes('financas')  && <Financas  uid={uid} theme={theme} />}
+          {page==='settings'  && <Settings user={user} profile={profile} onProfileUpdate={onProfileUpdate} logout={logout} />}
         </div>
       </div>
+
+      {/* Bottom nav mobile */}
       <nav className="bottom-nav">
         {[
-          {id:'home',icon:HomeIcon,label:'INÍCIO'},
-          {id:'jobs',icon:Briefcase,label:'VAGAS'},
-          {id:'projects',icon:Server,label:'PROJETOS'},
-          {id:'study',icon:BookOpen,label:'ESTUDOS'},
-          {id:'news',icon:Newspaper,label:'NOTÍCIAS'},
-        ].map(item=>(
-          <button key={item.id} className={`bottom-nav-item ${page===item.id?'active':''}`} onClick={()=>setPage(item.id)}>
-            <item.icon size={20}/>
+          { id:'home',     icon:HomeIcon,   label:'Início'   },
+          { id:'jobs',     icon:Briefcase,  label:'Vagas'    },
+          { id:'projects', icon:Server,     label:'Projetos' },
+          { id:'study',    icon:BookOpen,   label:'Estudos'  },
+          { id:'news',     icon:Newspaper,  label:'Notícias' },
+        ].map(item => (
+          <button
+            key={item.id}
+            className={`bottom-nav-item ${page===item.id?'active':''}`}
+            onClick={() => setPage(item.id)}
+          >
+            <item.icon size={20} />
             <span className="bottom-nav-label">{item.label}</span>
           </button>
         ))}
@@ -156,33 +171,33 @@ export default function App() {
   const [welcomeProfile, setWelcomeProfile] = useState(null)
   const [localProfile,   setLocalProfile]   = useState(null)
 
-  if (loading) return <LoadingScreen/>
-  if (!user)   return <SplashLogin/>
+  if (loading) return <LoadingScreen />
+  if (!user)   return <SplashLogin />
 
   const profile = localProfile || user.profile
 
   if (!profile?.onboardingDone) {
     return (
-      <Onboarding user={user} onComplete={(p)=>{
+      <Onboarding user={user} onComplete={(p) => {
         setWelcomeProfile(p)
         setLocalProfile(p)
         setShowWelcome(true)
-      }}/>
+      }} />
     )
   }
 
   const handleProfileUpdate = (updates) => {
-    setLocalProfile(p=>({...(p||profile),...updates}))
+    setLocalProfile(p => ({...(p || profile), ...updates}))
   }
 
   if (showWelcome && welcomeProfile) {
     return (
       <>
-        <Welcome profile={welcomeProfile} onDone={()=>setShowWelcome(false)}/>
-        <AuthenticatedApp user={user} profile={{...profile,...welcomeProfile}} onProfileUpdate={handleProfileUpdate} logout={logout}/>
+        <Welcome profile={welcomeProfile} onDone={() => setShowWelcome(false)} />
+        <AuthenticatedApp user={user} profile={{...profile,...welcomeProfile}} onProfileUpdate={handleProfileUpdate} logout={logout} />
       </>
     )
   }
 
-  return <AuthenticatedApp user={user} profile={profile} onProfileUpdate={handleProfileUpdate} logout={logout}/>
+  return <AuthenticatedApp user={user} profile={profile} onProfileUpdate={handleProfileUpdate} logout={logout} />
 }

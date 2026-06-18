@@ -1,39 +1,80 @@
-import { Home, Briefcase, Server, BookOpen, Newspaper, Image, DollarSign, Settings } from 'lucide-react'
+import { Home, Briefcase, Server, BookOpen, Newspaper, Image, DollarSign, Settings, ChevronRight } from 'lucide-react'
 
-export default function Sidebar({ active, onNavigate, features = [] }) {
+export default function Sidebar({ active, onNavigate, features = [], profile }) {
+  const theme = profile?.theme || 'stark-gold'
+
   const NAV = [
-    { id:'home',     icon:Home,       label:'INÍCIO',   always:true },
-    { id:'jobs',     icon:Briefcase,  label:'VAGAS',    always:true },
-    { id:'projects', icon:Server,     label:'PROJETOS', always:true },
-    { id:'study',    icon:BookOpen,   label:'ESTUDOS',  always:true },
-    { id:'news',     icon:Newspaper,  label:'NOTÍCIAS', always:true },
-    { id:'moodboard',icon:Image,      label:'MOODBOARD',feature:'moodboard' },
-    { id:'financas', icon:DollarSign, label:'GASTOS',   feature:'financas' },
+    { id:'home',      icon:Home,       label:'Visão Geral', section:'Principal', always:true },
+    { id:'jobs',      icon:Briefcase,  label:'Vagas',       section:null,        always:true, count:true },
+    { id:'projects',  icon:Server,     label:'Projetos',    section:null,        always:true },
+    { id:'study',     icon:BookOpen,   label:'Estudos',     section:'Conhecimento', always:true },
+    { id:'news',      icon:Newspaper,  label:'Notícias',    section:null,        always:true },
+    { id:'moodboard', icon:Image,      label:'Moodboard',   section:'Extras',    feature:'moodboard' },
+    { id:'financas',  icon:DollarSign, label:'Gastos',      section:null,        feature:'financas' },
   ].filter(item => item.always || features.includes(item.feature))
+
+  // Agrupa por seção
+  let lastSection = null
+
+  const displayName = profile?.name?.split(' ')[0] || 'Usuário'
+  const displayRole = profile?.course || 'Penseira'
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">
-        <svg viewBox="0 0 32 36" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="16,1 31,9 31,27 16,35 1,27 1,9" fill="none" stroke="rgba(201,168,76,0.35)" strokeWidth="1"/>
-          <polygon points="16,5 27,11 27,25 16,31 5,25 5,11" fill="rgba(201,168,76,0.06)" stroke="rgba(201,168,76,0.6)" strokeWidth="1"/>
-          <text x="16" y="22" textAnchor="middle" fontFamily="serif" fontSize="14" fill="#C9A84C" fontWeight="700">P</text>
-        </svg>
+      {/* Logo */}
+      <div className="sidebar-header">
+        <div className="sidebar-logo-mark">
+          {theme === 'stark-gold' ? 'P' : theme === 'nebula' ? '✦' : 'P'}
+        </div>
+        <div className="sidebar-logo-name">Penseira</div>
       </div>
-      <div className="sidebar-divider"/>
-      {NAV.map(item => (
-        <div key={item.id} className={`nav-item ${active===item.id?'active':''}`} data-label={item.label} onClick={()=>onNavigate(item.id)}>
-          <item.icon size={17}/>
+
+      {/* Nav */}
+      <nav className="sidebar-nav">
+        {NAV.map(item => {
+          const showSection = item.section && item.section !== lastSection
+          if (item.section) lastSection = item.section
+
+          return (
+            <div key={item.id}>
+              {showSection && (
+                <div className="nav-section-label">{item.section}</div>
+              )}
+              <div
+                className={`nav-item ${active === item.id ? 'active' : ''}`}
+                onClick={() => onNavigate(item.id)}
+              >
+                <item.icon size={16} />
+                <span style={{flex:1}}>{item.label}</span>
+                {item.count && (
+                  <span className="nav-item-count">4</span>
+                )}
+              </div>
+            </div>
+          )
+        })}
+
+        <div className="sidebar-divider" />
+        <div
+          className={`nav-item ${active === 'settings' ? 'active' : ''}`}
+          onClick={() => onNavigate('settings')}
+        >
+          <Settings size={16} />
+          <span style={{flex:1}}>Config.</span>
         </div>
-      ))}
+      </nav>
+
+      {/* User */}
       <div className="sidebar-footer">
-        <div className="sidebar-divider"/>
-        <div className={`nav-item ${active==='settings'?'active':''}`} data-label="CONFIGURAÇÕES" onClick={()=>onNavigate('settings')} style={{marginTop:4}}>
-          <Settings size={17}/>
-        </div>
-        <div style={{fontFamily:'var(--font-hud)',fontSize:8,letterSpacing:1,color:'var(--text-muted)',textAlign:'center',paddingTop:6,lineHeight:1.8}}>
-          <div>v1.0</div>
-          <div style={{color:'var(--cyan)',opacity:0.6}}>●</div>
+        <div className="sidebar-user" onClick={() => onNavigate('settings')}>
+          <div className="sidebar-avatar">
+            {displayName[0]?.toUpperCase()}
+          </div>
+          <div style={{flex:1, minWidth:0}}>
+            <div className="sidebar-user-name">{displayName}</div>
+            <div className="sidebar-user-role" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{displayRole}</div>
+          </div>
+          <ChevronRight size={13} style={{color:'var(--text-muted)',flexShrink:0}} />
         </div>
       </div>
     </aside>

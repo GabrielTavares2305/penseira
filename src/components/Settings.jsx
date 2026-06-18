@@ -10,10 +10,11 @@ const SUGGESTED_BY_AREA = {
 }
 
 const THEMES = [
-  { id:'stark-gold', name:'Stark Gold', desc:'Escuro · Futurista',  accent:'#C9A84C', bg:'#060810' },
-  { id:'studio',     name:'Studio',     desc:'Claro · Editorial',   accent:'#C4553A', bg:'#FAFAF8' },
-  { id:'nebula',     name:'Nebula',     desc:'Escuro · Roxo',       accent:'#C084FC', bg:'#0A0612' },
-  { id:'arctic',     name:'Arctic',     desc:'Claro · Azul',        accent:'#2563EB', bg:'#F0F4F8' },
+  { id:'stark-gold', name:'Stark Gold', desc:'Escuro · Futurista · HUD', accent:'#C9A84C', bg:'#060810' },
+  { id:'studio',     name:'Studio',     desc:'Claro · Editorial · Pro',   accent:'#C4553A', bg:'#FAFAF8' },
+  { id:'nebula',     name:'Nebula',     desc:'Escuro · Roxo · Criativo',  accent:'#C084FC', bg:'#0A0612' },
+  { id:'arctic',     name:'Arctic',     desc:'Claro · Azul · Minimalista',accent:'#2563EB', bg:'#F0F4F8' },
+  { id:'glass',      name:'Glass',      desc:'Glassmorphism · Moderno',   accent:'#1A1A2E', bg:'#C8CDD6' },
 ]
 
 const OPTIONAL_FEATURES = [
