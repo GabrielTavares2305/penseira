@@ -21,6 +21,7 @@ const OPTIONAL_FEATURES = [
   { id:'moodboard',    label:'Moodboard',             desc:'Painéis de referências visuais',     emoji:'🎨' },
   { id:'financas',     label:'Controle de Gastos',    desc:'Carteira, cartão e extrato',         emoji:'💰' },
   { id:'notificacoes', label:'Lembretes de Estudo',   desc:'Notificações de estudo no navegador',emoji:'🔔' },
+  { id:'academia',     label:'Academia',              desc:'Treinos, timers e cardio',           emoji:'🏋️' },
 ]
 
 const COLORS = ['#C9A84C','#00FFC8','#5BA8FF','#C4553A','#9B7FC0','#FF4C6A','#E3B341','#3FB950']

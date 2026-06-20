@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../firebase'
-import { Check, Plus, X, Palette, BookOpen, Image, DollarSign, Bell } from 'lucide-react'
+import { Check, Plus, X, Palette, BookOpen, Image, DollarSign, Bell, Dumbbell } from 'lucide-react'
 
 const SUGGESTED_SUBJECTS = {
   ti: [
@@ -91,6 +91,13 @@ const OPTIONAL_FEATURES = [
     title: 'Lembretes de Estudo',
     desc: 'Receba notificações do navegador nos horários que você definir para lembrar de estudar ou fazer revisões.',
     color: '#58A6FF',
+  },
+  {
+    id: 'academia',
+    icon: Dumbbell,
+    title: 'Academia',
+    desc: 'Monte sua série de treinos por dia da semana com exercícios, repetições e carga. Timer por aparelho, tempo total na academia, e uma aba dedicada para caminhada e pedalada.',
+    color: '#F5A623',
   },
 ]
 

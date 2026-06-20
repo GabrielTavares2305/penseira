@@ -13,6 +13,7 @@ import Moodboard   from './components/Moodboard'
 import Financas    from './components/Financas'
 import Settings    from './components/Settings'
 import MoreMenu    from './components/MoreMenu'
+import Academia    from './components/Academia'
 import { useAuth }         from './hooks/useAuth'
 import { useTheme }        from './hooks/useTheme'
 import { useLocalStorage } from './hooks/useLocalStorage'
@@ -27,6 +28,7 @@ const PAGE_TITLES = {
   news:      'Notícias',
   moodboard: 'Moodboard',
   financas:  'Gastos',
+  academia:  'Academia',
   settings:  'Configurações',
 }
 
@@ -130,6 +132,7 @@ function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
           {page==='news'      && <News />}
           {page==='moodboard' && features.includes('moodboard') && <Moodboard uid={uid} theme={theme} />}
           {page==='financas'  && features.includes('financas')  && <Financas  uid={uid} theme={theme} />}
+          {page==='academia'  && features.includes('academia')  && <Academia  uid={uid} />}
           {page==='settings'  && <Settings user={user} profile={profile} onProfileUpdate={onProfileUpdate} logout={logout} />}
         </div>
       </div>
@@ -153,7 +156,7 @@ function AuthenticatedApp({ user, profile, onProfileUpdate, logout }) {
           </button>
         ))}
         <button
-          className={`bottom-nav-item ${['settings','moodboard','financas'].includes(page)?'active':''}`}
+          className={`bottom-nav-item ${['settings','moodboard','financas','academia'].includes(page)?'active':''}`}
           onClick={() => setShowMore(true)}
         >
           <MoreHorizontal size={20} />

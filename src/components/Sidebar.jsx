@@ -1,4 +1,4 @@
-import { Home, Briefcase, Server, BookOpen, Newspaper, Image, DollarSign, Settings, ChevronRight } from 'lucide-react'
+import { Home, Briefcase, Server, BookOpen, Newspaper, Image, DollarSign, Dumbbell, Settings, ChevronRight } from 'lucide-react'
 
 export default function Sidebar({ active, onNavigate, features = [], profile }) {
   const theme = profile?.theme || 'stark-gold'
@@ -11,6 +11,7 @@ export default function Sidebar({ active, onNavigate, features = [], profile }) 
     { id:'news',      icon:Newspaper,  label:'Notícias',    section:null,        always:true },
     { id:'moodboard', icon:Image,      label:'Moodboard',   section:'Extras',    feature:'moodboard' },
     { id:'financas',  icon:DollarSign, label:'Gastos',      section:null,        feature:'financas' },
+    { id:'academia',  icon:Dumbbell,   label:'Academia',    section:null,        feature:'academia' },
   ].filter(item => item.always || features.includes(item.feature))
 
   // Agrupa por seção

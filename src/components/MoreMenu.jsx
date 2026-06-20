@@ -1,10 +1,11 @@
-import { Settings, Image, DollarSign, X } from 'lucide-react'
+import { Settings, Image, DollarSign, Dumbbell, X } from 'lucide-react'
 
 export default function MoreMenu({ onNavigate, onClose, features = [] }) {
   const items = [
     { id:'settings',  icon:Settings,    label:'Configurações', always:true },
     { id:'moodboard', icon:Image,       label:'Moodboard',      feature:'moodboard' },
     { id:'financas',  icon:DollarSign,  label:'Controle de Gastos', feature:'financas' },
+    { id:'academia',  icon:Dumbbell,    label:'Academia',       feature:'academia' },
   ].filter(i => i.always || features.includes(i.feature))
 
   return (
